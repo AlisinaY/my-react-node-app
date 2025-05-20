@@ -1,0 +1,49 @@
+# Docker Compose für starten jenkins in Docker und docker:dind
+
+services:
+  jenkins-docker:
+    image: docker:dind
+    container_name: "jenkins-docker"
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: "/certs"
+    volumes:
+      - "jenkins-docker-certs:/certs/client"
+      - "jenkins-data:/var/jenkins_home"
+    ports:
+      - "2376:2376"
+    command: "--storage-driver overlay2"
+    networks:
+      jenkins:
+        aliases:
+          - "docker"
+
+  jenkins-blueocean:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: myjenkins-blueocean:2.504.1-1
+    container_name: "jenkins-blueocean"
+    restart: on-failure
+    environment:
+      DOCKER_HOST: "tcp://docker:2376"
+      DOCKER_CERT_PATH: "/certs/client"
+      DOCKER_TLS_VERIFY: "1"
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - "jenkins-data:/var/jenkins_home"
+      - "jenkins-docker-certs:/certs/client:ro"
+    networks:
+      jenkins:
+        aliases:
+          - "jenkins"
+
+networks:
+  jenkins:
+    external: true
+
+volumes:
+  jenkins-docker-certs: {}
+  jenkins-data: {}

@@ -1,0 +1,85 @@
+pipeline {
+  agent {
+    docker {
+      image 'node:18-alpine'
+    }
+  }
+
+  environment {
+    AWS_CREDENTIALS_ID = "aws-creds"
+    S3_BUCKET = "my-react-app-f"
+    AWS_REGION= "eu-central-1"
+  }
+
+  stages {
+    // Stage 1: Checkout (bereits vorhanden)
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    // Stage 2: Install Dependencies
+    stage('Install Dependencies') {
+      steps {
+        // 1. Clean install: nutzt package-lock.json für konsistente Versionen
+        sh 'npm i'
+      }
+    }
+
+    stage("Test"){
+      steps {
+        sh "npm run test -- --watchAll=false --bail"
+      }
+    }
+
+    stage("Build") {
+      steps {
+        // Führt alle Unit- und Integrationstests einmal durch
+        sh "npm run build"
+      }
+    }
+
+    stage("Archive Artifacts") {
+      steps {
+        archiveArtifacts artifacts: "build/**", fingerprint: true
+      }
+    }
+
+   stage("Deploy") {
+    when {branch "main"} 
+    steps {
+      echo "Deploy: Upload build/ nach s3://${S3_BUCKET}"
+      withAWS(credentials: AWS_CREDENTIALS_ID, region: AWS_REGION) {
+        s3Upload(
+          bucket: S3_BUCKET,
+          path: "my-react-app/",
+          includePathPattern: "**",
+          workingDir: "build"
+        )
+      }
+    }
+   }
+
+  }
+
+  post {
+    success {
+      echo "Alles erfolgreich durchgelaufen!"
+    }
+    failure
+     {
+      echo "Bei einem Schritt ist was schiefgelaufen."
+     }
+    always {
+      cleanWs()
+    }
+  }
+}
+
+
+
+
+
+
+
