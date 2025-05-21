@@ -6,7 +6,7 @@ import {
   screen,
   fireEvent,
   waitFor,
-  within
+  within,
 } from "@testing-library/react";
 import App from "./App";
 
@@ -15,7 +15,7 @@ const mockFetch = (status, body) => {
   global.fetch = jest.fn().mockResolvedValue({
     ok: status === 200,
     status,
-    json: async () => body
+    json: async () => body,
   });
 };
 
@@ -37,7 +37,7 @@ describe("App Component", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: /Registrieren$/i }));
     expect(
-      screen.getByRole("heading", { name: /Registrieren/i })
+      screen.getByRole("heading", { name: /Registrieren/i }),
     ).toBeInTheDocument();
     // Zurück zum Login
     fireEvent.click(screen.getByRole("button", { name: /Zum Login/i }));
@@ -52,7 +52,7 @@ describe("App Component", () => {
     // Login und anschließende Produkt-Abfrage mocken
     const products = [
       { _id: "1", name: "Prod A", price: 9.99, imagePath: "/img/a.png" },
-      { _id: "2", name: "Prod B", price: 19.99, imagePath: "" }
+      { _id: "2", name: "Prod B", price: 19.99, imagePath: "" },
     ];
     global.fetch
       .mockResolvedValueOnce({ ok: true, json: async () => ({}) }) // login
@@ -60,18 +60,18 @@ describe("App Component", () => {
 
     // Login-Form ausfüllen und absenden
     fireEvent.change(screen.getByPlaceholderText(/Benutzername/i), {
-      target: { value: "user1" }
+      target: { value: "user1" },
     });
     fireEvent.change(screen.getByPlaceholderText(/Passwort/i), {
-      target: { value: "pass1" }
+      target: { value: "pass1" },
     });
     fireEvent.click(screen.getByRole("button", { name: /^Login$/i }));
 
     // Warte auf Anzeige der Produkt-Überschrift
     await waitFor(() =>
       expect(
-        screen.getByRole("heading", { name: /Produkte/i })
-      ).toBeInTheDocument()
+        screen.getByRole("heading", { name: /Produkte/i }),
+      ).toBeInTheDocument(),
     );
 
     // Prod A prüfen
@@ -96,8 +96,8 @@ describe("App Component", () => {
     // Warte auf Produkt-Überschrift
     await waitFor(() =>
       expect(
-        screen.getByRole("heading", { name: /Produkte/i })
-      ).toBeInTheDocument()
+        screen.getByRole("heading", { name: /Produkte/i }),
+      ).toBeInTheDocument(),
     );
 
     // Logout-Call mocken und ausführen
@@ -107,8 +107,8 @@ describe("App Component", () => {
     // Danach sollte wieder das Login-Formular gezeigt werden
     await waitFor(() =>
       expect(
-        screen.getByRole("heading", { name: /Login/i })
-      ).toBeInTheDocument()
+        screen.getByRole("heading", { name: /Login/i }),
+      ).toBeInTheDocument(),
     );
   });
 });

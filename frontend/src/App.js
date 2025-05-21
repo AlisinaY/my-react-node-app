@@ -15,7 +15,7 @@ function App() {
 
   async function checkLogin() {
     const res = await fetch(`${API_URL}/api/products`, {
-      credentials: "include"
+      credentials: "include",
     });
     if (res.ok) {
       setLoggedIn(true);
@@ -30,7 +30,7 @@ function App() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
-      credentials: "include"
+      credentials: "include",
     });
     if (res.ok) {
       setUsername("");
@@ -46,7 +46,7 @@ function App() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
-      credentials: "include"
+      credentials: "include",
     });
     if (res.ok) {
       alert("Registrierung erfolgreich!");
@@ -59,7 +59,7 @@ function App() {
   async function logout() {
     await fetch(`${API_URL}/api/logout`, {
       method: "POST",
-      credentials: "include"
+      credentials: "include",
     });
     setLoggedIn(false);
     setProducts([]);
@@ -146,7 +146,7 @@ function UploadForm({ onUploaded }) {
     const res = await fetch(`${API_URL}/api/products`, {
       method: "POST",
       body: formData,
-      credentials: "include"
+      credentials: "include",
     });
 
     if (res.ok) {
@@ -185,7 +185,7 @@ function ProductItem({ product, onDeleted }) {
   async function handleDelete() {
     const res = await fetch(`${API_URL}/api/products/${product._id}`, {
       method: "DELETE",
-      credentials: "include"
+      credentials: "include",
     });
     if (res.ok) onDeleted();
   }
