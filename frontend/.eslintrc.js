@@ -3,7 +3,7 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    node: true // aktiviert u.a. `process`
+    node: true // aktiviert u.a. `process` "Test"
   },
   settings: {
     react: { version: "detect" } // liest automatisch Deine React-Version aus package.json
